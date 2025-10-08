@@ -25,4 +25,4 @@ For collaboration:
 
 Owner: Karl Matias
 
-Collaborator: Name 2
+Collaborator: Calvin Small
