@@ -24,5 +24,5 @@ For collaboration:
 10. Pull! Did you get a copy of your partner's file? How many total files do you have now?
 
 Owner: Karl Matias
-
 Collaborator: Calvin Small
+Collaborator: Johnny Bae
