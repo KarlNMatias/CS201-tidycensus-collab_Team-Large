@@ -104,17 +104,33 @@ girafe(ggobj = oahu_poverty_map, width = 700, height = 400)
 
 Here is a [list of the Tract Names with reference numbers](https://files.hawaii.gov/dbedt/census/census_2020/data/2020-tract-names.pdf)
 
-Now let's look at family poverty in Honolulu County over time
-
 ## Try an example of your own
 
 ```{r}
 # get the data
-
+oahu_median_age <- get_acs(
+  geography = "tract",
+  variables = c(median_age = "DP05_0017E"),  # Median age
+  state = "HI",
+  county = "Honolulu",
+  geometry = TRUE,
+  output = "wide",
+  year = 2023) %>%
+  dplyr::filter(!GEOID %in% c("15003981200","15003981900"))
 
 # map it
+oahu_median_age_map <- ggplot(oahu_median_age) +
+  geom_sf_interactive(aes(
+    fill = median_age,
+    tooltip = paste(NAME, ": ", round(median_age, 1), " years"),
+    data_id = NAME)) +
+  scale_fill_viridis_c(option = "plasma") +
+  labs(
+    title = "Median Age by Census Tract — Honolulu County (2023)",
+    fill = "Median Age") +
+  theme_void()
 
-
+girafe(ggobj = oahu_median_age_map, width = 700, height = 400)
 ```
 
 ## Back to Exploring Poverty...
