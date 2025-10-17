@@ -228,7 +228,25 @@ REMEMBER! [Pull]{.underline} before working in the `-collab.qmd` file. [Save, Co
 Investigating (insert variable here) on Oahu at the census tract level.
 
 ```{r, message=FALSE, warning=FALSE, results='hide'}
+#Variables from table C21007: Poverty status by veteran status
+vars <- c(
+  total_pop_18plus = "C21007_001E",
+  total_veterans = "C21007_002E",
+  veterans_below_poverty = "C21007_003E",
+  nonveterans_below_poverty = "C21007_007E"
+)
 
+#Pull Hawai‘i data by census tract
+hi_veterans_geo <- get_acs(
+  geography = "tract",
+  variables = vars,
+  state = "15",          # 15 = Hawai‘i
+  year = 2023,
+  survey = "acs5",
+  geometry = TRUE,
+  cache_table = TRUE,
+  output = "wide"
+)
 
 ```
 
