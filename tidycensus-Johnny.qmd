@@ -99,7 +99,6 @@ oahu_poverty_map <- ggplot(oahu_poverty) +
   theme_void() 
 
 girafe(ggobj = oahu_poverty_map, width = 700, height = 400)
-
 ```
 
 Here is a [list of the Tract Names with reference numbers](https://files.hawaii.gov/dbedt/census/census_2020/data/2020-tract-names.pdf)
@@ -176,7 +175,6 @@ ggplot(oahu_poverty_2014_2023, aes(x = year, y = estimate, group = 1)) +
        x = "ACS Release Year (5-year window)",
        y = "Percent in Poverty",
        caption = "Shaded area represents margin of error around the estimate")
-
 ```
 
 ## Scatter Plot
@@ -194,8 +192,6 @@ oahu_family_poverty_college_education <- get_acs(
   output = "wide",
   year = 2023) %>% 
   dplyr::filter(GEOID != "15003981200" & GEOID !="15003981900")
-
-
 ```
 
 ```{r Scatter Plot, warning=FALSE, message=FALSE}
@@ -209,10 +205,13 @@ ggplot(oahu_family_poverty_college_education, aes(x = percent_povertyE,y = perce
        x = "Percent of Families Living Below the Poverty Line",
        y = "Percent with a BA or higher",
        caption = "Shaded area represents margin of error around the estimate")
-  
 ```
 
 Interesting. With each point being a census tract, and a correlation coefficient (*R*) of -0.39, what is the relationship between poverty and education at the tract level in Honolulu County?
+
+-   negative relationship between poverty and education
+
+-   higher poverty tend to have fewer people with college degrees
 
 ------------------------------------------------------------------------
 
@@ -233,7 +232,7 @@ Directions:
 
 2.  Take turns! Who will do what? Be careful not to overwrite one another.
 
-    -   I will be looking for at least 4 exchanges
+    -   I will be looking for at least 6 exchanges
 
 3.  Paste your challenge answers below
 
@@ -241,7 +240,7 @@ REMEMBER! [Pull]{.underline} before working in the `-collab.qmd` file. [Save, Co
 
 ### Import Data
 
-Investigating (insert variable here) on Oahu at the census tract level.
+Investigating (Median Household Income) on Oahu at the census tract level.
 
 ```{r, message=FALSE, warning=FALSE, results='hide'}
 
