@@ -253,7 +253,16 @@ hi_veterans_geo <- get_acs(
 ### Mapping
 
 ```{r, message=FALSE, warning=FALSE, results='hide'}
+oahu_veteran_poverty_map <- ggplot(hi_veterans_geo) +
+  geom_sf_interactive(
+    aes(
+      fill = veterans_below_poverty,
+      tooltip = paste(NAME, ": ", veterans_below_poverty, "%"),
+      data_id = NAME)) +
+  scale_fill_viridis_c(option = "mako") +
+  theme_void() 
 
+girafe(ggobj = oahu_veteran_poverty_map, width = 700, height = 400)
 
 ```
 
