@@ -291,14 +291,24 @@ girafe(ggobj = oahu_veteran_poverty_map, width = 700, height = 400)
 Exploring the relationship between (insert variable here) and (insert variable here) with a scatter plot
 
 ```{r, message=FALSE, warning=FALSE, results='hide'}
-oahu_vets <- hi_veterans_geo %>%
-  filter(str_detect(name, "Honolulu County"))
+oahu_vets <- oahu_veterans_geo %>%
+  ggplot(aes(x = total_veterans, y = veterans_below_poverty)) +
+  geom_point(color = "orange", alpha = 0.8, size = 3) +
+  geom_smooth(method = "lm", se = TRUE, color = "blue", linetype = "dashed") + 
+  ggpubr::stat_cor(
+    aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~")),
+    color = "black"
+  ) + 
+  theme_minimal(base_size = 13) + 
+  labs(
+    title = "Veterans in Poverty — O‘ahu (Honolulu County)",
+    subtitle = "ACS 5-Year Estimates, 2023 Release",
+    x = "Total Veterans (per Census Tract)",
+    y = "Veterans Below Poverty",
+    caption = "Shaded area represents margin of error around the estimate"
+  )
 
-oahu_vets <- oahu_vets %>%
- 
-    
-#working in prog
-
+oahu_vets
 ```
 
 ### Describe what you found
