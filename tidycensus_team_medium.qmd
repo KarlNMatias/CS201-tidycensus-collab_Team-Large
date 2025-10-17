@@ -250,9 +250,9 @@ oahu_veterans_geo <- get_acs(
   
   janitor::clean_names() %>%
   dplyr::mutate(
-    pct_vets_poverty = (veterans_below_poverty / total_veterans) * 100,
-    pct_nonvets_poverty = (nonveterans_below_poverty /
-                           (total_pop_18plus - total_veterans)) * 100
+    pct_vets_poverty = round(((veterans_below_poverty / total_veterans) * 100),2),
+    pct_nonvets_poverty = round(((nonveterans_below_poverty /
+                           (total_pop_18plus - total_veterans)) * 100),2)
   ) %>%
   dplyr::select(
     name, geoid,
@@ -269,8 +269,8 @@ oahu_veterans_geo <- get_acs(
 oahu_veteran_poverty_map <- ggplot(oahu_veterans_geo) +
   geom_sf_interactive(
     aes(
-      fill = veterans_below_poverty,
-      tooltip = paste(name, ": ", veterans_below_poverty, "%"),
+      fill = pct_vets_poverty,
+      tooltip = paste(name, ": ", pct_vets_poverty, "%"),
       data_id = name)) +
   scale_fill_viridis_c(option = "mako", direction = -1) +
   theme_void() 
