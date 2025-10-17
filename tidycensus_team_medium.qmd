@@ -272,7 +272,7 @@ oahu_veteran_poverty_map <- ggplot(oahu_veterans_geo) +
       fill = veterans_below_poverty,
       tooltip = paste(name, ": ", veterans_below_poverty, "%"),
       data_id = name)) +
-  scale_fill_viridis_c(option = "mako") +
+  scale_fill_viridis_c(option = "mako", direction = -1) +
   theme_void() 
 
 girafe(ggobj = oahu_veteran_poverty_map, width = 700, height = 400)
