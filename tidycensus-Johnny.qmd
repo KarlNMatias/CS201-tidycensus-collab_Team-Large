@@ -243,8 +243,16 @@ REMEMBER! [Pull]{.underline} before working in the `-collab.qmd` file. [Save, Co
 Investigating (Median Household Income) on Oahu at the census tract level.
 
 ```{r, message=FALSE, warning=FALSE, results='hide'}
-
-
+oahu_income <- get_acs(
+  geography = "tract",
+  variables = c(median_income = "DP03_0062E"),
+  state = "HI",
+  county = "Honolulu",
+  geometry = TRUE,
+  output = "wide",
+  year = 2023
+  ) %>%
+  dplyr::filter(!GEOID %in% c("15003981200","15003981900"))  # drop tiny outer tracts
 ```
 
 ### Mapping

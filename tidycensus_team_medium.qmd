@@ -1,6 +1,7 @@
 ---
 title: "tidycensus Intro & GitHub Collab"
 author: "Amber Camp" 
+collaborators: "Johnny, Calvin, Karl"
 date: "`r Sys.Date()`"
 format: html
 editor: visual
