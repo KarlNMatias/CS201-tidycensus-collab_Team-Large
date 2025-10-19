@@ -99,7 +99,6 @@ oahu_poverty_map <- ggplot(oahu_poverty) +
   theme_void() 
 
 girafe(ggobj = oahu_poverty_map, width = 700, height = 400)
-
 ```
 
 Here is a [list of the Tract Names with reference numbers](https://files.hawaii.gov/dbedt/census/census_2020/data/2020-tract-names.pdf)
@@ -110,11 +109,29 @@ Now let's look at family poverty in Honolulu County over time
 
 ```{r}
 # get the data
-
+oahu_median_age <- get_acs(
+  geography = "tract",
+  variables = c(median_age = "DP05_0017E"),  # Median age
+  state = "HI",
+  county = "Honolulu",
+  geometry = TRUE,
+  output = "wide",
+  year = 2023) %>%
+  dplyr::filter(!GEOID %in% c("15003981200","15003981900"))
 
 # map it
+oahu_median_age_map <- ggplot(oahu_median_age) +
+  geom_sf_interactive(aes(
+    fill = median_age,
+    tooltip = paste(NAME, ": ", round(median_age, 1), " years"),
+    data_id = NAME)) +
+  scale_fill_viridis_c(option = "plasma") +
+  labs(
+    title = "Median Age by Census Tract — Honolulu County (2023)",
+    fill = "Median Age") +
+  theme_void()
 
-
+girafe(ggobj = oahu_median_age_map, width = 700, height = 400)
 ```
 
 ## Back to Exploring Poverty...
@@ -160,7 +177,6 @@ ggplot(oahu_poverty_2014_2023, aes(x = year, y = estimate, group = 1)) +
        x = "ACS Release Year (5-year window)",
        y = "Percent in Poverty",
        caption = "Shaded area represents margin of error around the estimate")
-
 ```
 
 ## Scatter Plot
@@ -178,8 +194,6 @@ oahu_family_poverty_college_education <- get_acs(
   output = "wide",
   year = 2023) %>% 
   dplyr::filter(GEOID != "15003981200" & GEOID !="15003981900")
-
-
 ```
 
 ```{r Scatter Plot, warning=FALSE, message=FALSE}
@@ -193,7 +207,6 @@ ggplot(oahu_family_poverty_college_education, aes(x = percent_povertyE,y = perce
        x = "Percent of Families Living Below the Poverty Line",
        y = "Percent with a BA or higher",
        caption = "Shaded area represents margin of error around the estimate")
-  
 ```
 
 Interesting. With each point being a census tract, and a correlation coefficient (*R*) of -0.39, what is the relationship between poverty and education at the tract level in Honolulu County?
@@ -234,33 +247,28 @@ oahu_veterans_geo <- get_acs(
     total_pop_18plus = "C21007_001E",
     total_veterans = "C21007_002E",
     veterans_below_poverty = "C21007_003E",
-    nonveterans_below_poverty = "C21007_007E"
-  ),
+    nonveterans_below_poverty = "C21007_007E"),
   state = "HI",
   county = "Honolulu",
   geometry = TRUE,
   output = "wide",
-  year = 2023
-) %>%
+  year = 2023) %>%
  
   dplyr::filter(
     GEOID != "15003981200",  
-    GEOID != "15003981900"   
-  ) %>%
+    GEOID != "15003981900") %>%
   
   janitor::clean_names() %>%
   dplyr::mutate(
     pct_vets_poverty = round(((veterans_below_poverty / total_veterans) * 100),2),
     pct_nonvets_poverty = round(((nonveterans_below_poverty /
-                           (total_pop_18plus - total_veterans)) * 100),2)
-  ) %>%
+                           (total_pop_18plus - total_veterans)) * 100),2)) %>%
   dplyr::select(
     name, geoid,
     total_pop_18plus, total_veterans,
     veterans_below_poverty, nonveterans_below_poverty,
     pct_vets_poverty, pct_nonvets_poverty,
-    geometry
-  )
+    geometry)
 ```
 
 ### Mapping
@@ -276,14 +284,41 @@ oahu_veteran_poverty_map <- ggplot(oahu_veterans_geo) +
   theme_void() 
 
 girafe(ggobj = oahu_veteran_poverty_map, width = 700, height = 400)
-
 ```
 
 ### Time Series
 
 ```{r, message=FALSE, warning=FALSE, results='hide'}
+years <- 2014:2023
+names(years) <- years
 
+oahu_vets_pov_2014_2023 <- purrr::map_dfr(
+  years,
+  ~ get_acs(
+      geography = "county",
+      variables = c(vets_below_pov = "C21007_003E"),  # count (E) + MOE (M)
+      state = "HI",
+      county = "Honolulu",
+      year = .x,
+      survey = "acs5"
+    ) |>
+    dplyr::mutate(year = as.integer(.x))
+)
+```
 
+```{r}
+ggplot(oahu_vets_pov_2014_2023, aes(x = year, y = estimate, group = 1)) +
+  geom_ribbon(aes(ymin = estimate - moe, ymax = estimate + moe),
+              fill = "steelblue", alpha = 0.35) +
+  geom_line(color = "steelblue") +
+  geom_point(color = "steelblue", size = 2) +
+  theme_minimal() +
+  labs(
+    title = "Veterans Below Poverty — Honolulu County (ACS 5-year estimates)",
+    x = "ACS Release Year (5-year window)",
+    y = "Veterans Below Poverty (count)",
+    caption = "Shaded area represents margin of error around the estimate"
+  )
 ```
 
 ### Scatter Plot
@@ -297,18 +332,18 @@ oahu_vets <- oahu_veterans_geo %>%
   geom_smooth(method = "lm", se = TRUE, color = "blue", linetype = "dashed") + 
   ggpubr::stat_cor(
     aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~")),
-    color = "black"
-  ) + 
+    color = "black") + 
   theme_minimal(base_size = 13) + 
   labs(
     title = "Veterans in Poverty — O‘ahu (Honolulu County)",
     subtitle = "ACS 5-Year Estimates, 2023 Release",
     x = "Total Veterans (per Census Tract)",
     y = "Veterans Below Poverty",
-    caption = "Shaded area represents margin of error around the estimate"
-  )
+    caption = "Shaded area represents margin of error around the estimate")
 
 oahu_vets
 ```
 
 ### Describe what you found
+
+Veteran poverty on Oʻahu varies by area but has stayed fairly steady over time. Tracts with more veterans tend to have slightly higher numbers living in poverty, though the relationship isn’t very strong.
